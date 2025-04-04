@@ -136,14 +136,42 @@ contract_map = {
 
 class ConfigManager:
 
-    def __init__(self, chain: str):
-
+    def __init__(
+        self, 
+        chain: str, 
+        *, 
+        rpc=None, 
+        chain_id=None, 
+        user_wallet_address=None, 
+        private_key=None, 
+        tg_bot_token=None,
+        config: dict = None
+    ):
         self.chain = chain
-        self.rpc = None
-        self.chain_id = None
-        self.user_wallet_address = None
-        self.private_key = None
-        self.tg_bot_token = None
+        self.rpc = rpc
+        self.chain_id = chain_id
+        self.user_wallet_address = user_wallet_address
+        self.private_key = private_key
+        self.tg_bot_token = tg_bot_token
+
+        # If a configuration dictionary is provided, use it to override defaults.
+        if config:
+            self.set_config_from_dict(config)
+    
+    def set_config_from_dict(self, config: dict):
+        """
+        Set configuration using a dictionary provided by the user.
+        """
+        # Update values only if they exist in the provided configuration
+        # Fallback to current values if not provided.
+        if 'rpcs' in config and self.chain in config['rpcs']:
+            self.rpc = config['rpcs'][self.chain]
+        if 'chain_ids' in config and self.chain in config['chain_ids']:
+            self.chain_id = config['chain_ids'][self.chain]
+        
+        self.user_wallet_address = config.get('user_wallet_address', self.user_wallet_address)
+        self.private_key = config.get('private_key', self.private_key)
+        self.tg_bot_token = config.get('tg_bot_token', self.tg_bot_token) 
 
     def set_config(self, filepath: str = os.path.join(base_dir, "config.yaml")):
 

@@ -22,7 +22,8 @@ include = ["gmx_python_sdk", "gmx_python_sdk.*"]
 namespaces = false
 
 [tool.poetry.dependencies]
-python = ">= 3.10.4"
+# this will break prjects with python > 3.10.x
+python = ">= 3.10, < 4"
 numpy = ">= 1.26.3"
 hexbytes = ">= 0.3.1"
 web3 = ">= 6.10.0"
