@@ -129,6 +129,11 @@ contract_map = {
         {
             "contract_address": "0x820F5FfC5b525cD4d88Cd91aCf2c28F16530Cc68",
             "abi_path": "contracts/avalanche/syntheticsrouter.json"
+        },
+        "glvreader":
+        {
+            "contract_address": "0xae9596a1C438675AcC75f69d32E21Ac9c8fF99bD",
+            "abi_path": "contracts/avalanche/glvreader.json"
         }
     }
 }
