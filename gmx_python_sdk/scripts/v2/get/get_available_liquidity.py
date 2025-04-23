@@ -4,8 +4,8 @@ from typing import Any
 import numpy as np
 from numerize import numerize
 
-from ..gmx_utils import execute_threading
-from ..keys import get_datastore_contract, open_interest_reserve_factor_key, pool_amount_key, reserve_factor_key
+from ..gmx_utils import execute_threading, get_datastore_contract
+from ..keys import open_interest_reserve_factor_key, pool_amount_key, reserve_factor_key
 from .get import GetData
 from .get_open_interest import OpenInterest
 from .get_oracle_prices import OraclePrices
