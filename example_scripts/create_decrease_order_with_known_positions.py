@@ -2,9 +2,10 @@ from utils import _set_paths
 
 _set_paths()
 
-from gmx_python_sdk.scripts.v2.order.create_decrease_order import DecreaseOrder
 from get_positions import get_positions, transform_open_position_to_order_parameters
+
 from gmx_python_sdk.scripts.v2.gmx_utils import ConfigManager
+from gmx_python_sdk.scripts.v2.order.create_decrease_order import DecreaseOrder
 
 config = ConfigManager(chain="arbitrum")
 config.set_config()

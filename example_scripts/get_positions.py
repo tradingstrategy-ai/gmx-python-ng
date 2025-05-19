@@ -5,13 +5,12 @@ _set_paths()
 from decimal import Decimal
 
 from gmx_python_sdk.scripts.v2.get.get_markets import Markets
-
 from gmx_python_sdk.scripts.v2.get.get_open_positions import GetOpenPositions
 from gmx_python_sdk.scripts.v2.gmx_utils import (
     ConfigManager,
+    determine_swap_route,
     find_dictionary_by_key_value,
     get_tokens_address_dict,
-    determine_swap_route,
 )
 
 

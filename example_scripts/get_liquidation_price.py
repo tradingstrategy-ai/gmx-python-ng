@@ -1,31 +1,29 @@
+import hashlib
+
+from hexbytes import HexBytes
 from utils import _set_paths
 from web3 import Web3
-import hashlib
-from hexbytes import HexBytes
 
 _set_paths()
 
+from decimal import Decimal
+
 from get_positions import get_positions
 
+from gmx_python_sdk.scripts.v2.get.get import GetData
 from gmx_python_sdk.scripts.v2.get.get_markets import Markets
 from gmx_python_sdk.scripts.v2.gmx_utils import (
     ConfigManager,
-    get_reader_contract,
     get_datastore_contract,
+    get_reader_contract,
     get_tokens_address_dict,
 )
-
 from gmx_python_sdk.scripts.v2.keys import (
-    min_collateral,
     accountPositionListKey,
     max_position_impact_factor_for_liquidations_key,
+    min_collateral,
     min_collateral_factor_key,
 )
-
-
-from gmx_python_sdk.scripts.v2.get.get import GetData
-
-from decimal import Decimal
 
 # TODO - KNOWN ISSUES
 # - Single Side Pools not working
@@ -144,7 +142,10 @@ def calculate_liquidation_price(
 
 
 def get_position_fee(
-    size_delta_usd: Decimal, for_positive_impact: bool, referral_info: dict = None, ui_fee_factor: Decimal = Decimal(0)
+    size_delta_usd: Decimal,
+    for_positive_impact: bool,
+    referral_info: dict = None,
+    ui_fee_factor: Decimal = Decimal(0),
 ) -> dict:
     factor = 0.0005 if for_positive_impact else 0.0007
 
@@ -192,7 +193,14 @@ def transform_to_dict(account_positions_list):
     result = []
     for pos in account_positions_list:
         # Unpack the components of each position
-        position, referral, fees, base_pnl_usd, uncapped_base_pnl_usd, pnl_after_price_impact_usd = pos
+        (
+            position,
+            referral,
+            fees,
+            base_pnl_usd,
+            uncapped_base_pnl_usd,
+            pnl_after_price_impact_usd,
+        ) = pos
 
         position_dict = {
             "position": {

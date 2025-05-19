@@ -2,11 +2,11 @@ from utils import _set_paths
 
 _set_paths()
 
-from gmx_python_sdk.scripts.v2.order.create_deposit_order import DepositOrder
-from gmx_python_sdk.scripts.v2.order.liquidity_argument_parser import LiquidityArgumentParser
-
 from gmx_python_sdk.scripts.v2.gmx_utils import ConfigManager
-
+from gmx_python_sdk.scripts.v2.order.create_deposit_order import DepositOrder
+from gmx_python_sdk.scripts.v2.order.liquidity_argument_parser import (
+    LiquidityArgumentParser,
+)
 
 config = ConfigManager("arbitrum")
 config.set_config()

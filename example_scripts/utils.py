@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 
 
 def _set_paths():

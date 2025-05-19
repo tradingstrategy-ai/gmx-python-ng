@@ -7,13 +7,12 @@ from gmx_python_sdk.scripts.v2.get.get_borrow_apr import GetBorrowAPR
 from gmx_python_sdk.scripts.v2.get.get_claimable_fees import GetClaimableFees
 from gmx_python_sdk.scripts.v2.get.get_contract_balance import GetPoolTVL as ContractTVL
 from gmx_python_sdk.scripts.v2.get.get_funding_apr import GetFundingFee
+from gmx_python_sdk.scripts.v2.get.get_glv_stats import GlvStats
 from gmx_python_sdk.scripts.v2.get.get_gm_prices import GMPrices
 from gmx_python_sdk.scripts.v2.get.get_markets import Markets
 from gmx_python_sdk.scripts.v2.get.get_open_interest import OpenInterest
 from gmx_python_sdk.scripts.v2.get.get_oracle_prices import OraclePrices
 from gmx_python_sdk.scripts.v2.get.get_pool_tvl import GetPoolTVL
-from gmx_python_sdk.scripts.v2.get.get_glv_stats import GlvStats
-
 from gmx_python_sdk.scripts.v2.gmx_utils import ConfigManager
 
 

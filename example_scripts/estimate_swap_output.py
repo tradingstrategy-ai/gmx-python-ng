@@ -3,16 +3,17 @@ from utils import _set_paths
 _set_paths()
 
 from web3 import Web3
-from gmx_python_sdk.scripts.v2.get.get_oracle_prices import OraclePrices
+
 from gmx_python_sdk.scripts.v2.get.get_markets import Markets
-from gmx_python_sdk.scripts.v2.order.order_argument_parser import OrderArgumentParser
+from gmx_python_sdk.scripts.v2.get.get_oracle_prices import OraclePrices
 from gmx_python_sdk.scripts.v2.gmx_utils import (
-    get_estimated_swap_output,
+    ConfigManager,
     contract_map,
     determine_swap_route,
+    get_estimated_swap_output,
     get_tokens_address_dict,
-    ConfigManager,
 )
+from gmx_python_sdk.scripts.v2.order.order_argument_parser import OrderArgumentParser
 
 
 class EstimateSwapOutput:
@@ -96,7 +97,11 @@ class EstimateSwapOutput:
 
         prices = OraclePrices(self.config.chain).get_recent_prices()
 
-        token_addresses = [market["index_token_address"], market["long_token_address"], market["short_token_address"]]
+        token_addresses = [
+            market["index_token_address"],
+            market["long_token_address"],
+            market["short_token_address"],
+        ]
 
         token_prices = [
             [int(prices[token]["maxPriceFull"]), int(prices[token]["minPriceFull"])] for token in token_addresses

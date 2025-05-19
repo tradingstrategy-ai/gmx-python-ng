@@ -3,14 +3,16 @@ from utils import _set_paths
 _set_paths()
 
 import time
+
 import numpy as np
 from numerize import numerize
+
 from gmx_python_sdk.scripts.v2.get.get_available_liquidity import GetAvailableLiquidity
 from gmx_python_sdk.scripts.v2.get.get_borrow_apr import GetBorrowAPR
 from gmx_python_sdk.scripts.v2.get.get_funding_apr import GetFundingFee
 from gmx_python_sdk.scripts.v2.get.get_open_interest import OpenInterest
-from gmx_python_sdk.scripts.v2.order.order_argument_parser import OrderArgumentParser
 from gmx_python_sdk.scripts.v2.order.create_increase_order import IncreaseOrder
+from gmx_python_sdk.scripts.v2.order.order_argument_parser import OrderArgumentParser
 
 
 def get_data(chain: str = "arbitrum"):
@@ -72,7 +74,10 @@ def create_nested_dict(available_liquidity: dict, net_rate_dict: dict):
     for key in liquidity_dict:
         position_type, asset = key.split("_")
         new_key = "{}_{}".format(position_type, asset)
-        nested_dict[new_key] = {"liquidity": liquidity_dict[key], "net_rate": net_rate_dict[key]}
+        nested_dict[new_key] = {
+            "liquidity": liquidity_dict[key],
+            "net_rate": net_rate_dict[key],
+        }
 
     return nested_dict
 

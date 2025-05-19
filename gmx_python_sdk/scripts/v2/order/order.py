@@ -17,7 +17,10 @@ from ..gmx_utils import (
     create_connection,
 )
 from ..gmx_utils import decrease_position_swap_type as decrease_position_swap_types
-from ..gmx_utils import get_exchange_router_contract, get_execution_price_and_price_impact
+from ..gmx_utils import (
+    get_exchange_router_contract,
+    get_execution_price_and_price_impact,
+)
 from ..gmx_utils import order_type as order_types
 
 is_newer_version, version = check_web3_correct_version()
@@ -385,7 +388,7 @@ class Order:
                 HexBytes(self._create_order(arguments)),
             ]
 
-        self._submit_transaction(user_wallet_address, value_amount, multicall_args, self._gas_limits)
+        return self._submit_transaction(user_wallet_address, value_amount, multicall_args, self._gas_limits)
 
     def _create_order(self, arguments):
         """
