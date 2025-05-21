@@ -163,7 +163,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
 
     # Get blockchain block information
     block = web3_provider.eth.get_block(int(oracle_block_number))
-    print(f"Block number: {block.number}")
+    # print(f"Block number: {block.number}")
 
     # Default to standard oracle types if not provided
     token_oracle_types = overrides.get("tokenOracleTypes", [TOKEN_ORACLE_TYPES["DEFAULT"]] * len(tokens))
@@ -250,7 +250,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         keeper_address = "0xE47b36382DC50b90bCF6176Ddb159C4b9333A7AB"
         controller_address = "0xb6d37DFCdA9c237ca98215f9154Dc414EFe0aC1b"
         # Get full oracle parameters for execution
-        print(f"Args for oracle params: {args}")
+        # print(f"Args for oracle params: {args}")
         oracle_params = get_oracle_params_for_custom_oracle(
             config=config,
             keeper_address=keeper_address,
@@ -260,7 +260,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         )
 
         logging.info(f"Key: {key}")
-        logging.info(f"Oracle Params: {oracle_params}")
+        # logging.info(f"Oracle Params: {oracle_params}")
 
         # Get the first signer if available
         if not signers:
