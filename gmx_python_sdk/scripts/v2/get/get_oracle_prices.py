@@ -8,7 +8,7 @@ class OraclePrices:
     def __init__(self, chain: str):
         self.chain = chain
         self.oracle_url = {
-            "arbitrum": ("https://arbitrum-api.gmxinfra.io/signed_prices/latest"),
+            "arbitrum": ("https://arbitrum-api.gmxinfra2.io/signed_prices/latest"),
             "avalanche": ("https://avalanche-api.gmxinfra.io/signed_prices/latest"),
         }
 
