@@ -1,9 +1,11 @@
 import logging
 from typing import Any
 
+from eth_utils import to_checksum_address
+
+from gmx_python_sdk.scripts.v2.get.get_oracle_prices import OraclePrices
 from gmx_python_sdk.scripts.v2.gmx_utils import get_contract_object
 from gmx_python_sdk.scripts.v2.utils.oracle import (
-    get_oracle_params,
     get_oracle_params_for_custom_oracle,
     get_oracle_params_for_simulation,
     TOKEN_ORACLE_TYPES,
@@ -54,7 +56,8 @@ def get_execute_params(fixture, params: dict[str, Any]) -> dict[str, list]:
         for token in tokens:
             price_info_item = default_price_info_items.get(token.address)
             if not price_info_item:
-                raise ValueError(f"Missing price info for token {token.address}")
+                msg = f"Missing price info for token {token.address}"
+                raise ValueError(msg)
 
             result_params["tokens"].append(token.address)
             result_params["precisions"].append(price_info_item["precision"])
@@ -74,45 +77,15 @@ def get_execute_params(fixture, params: dict[str, Any]) -> dict[str, list]:
     return result_params
 
 
-# Handle block hash conversion to bytes properly for all formats
-def get_block_hashes(block, tokens):
-    if block.hash is None:
-        # Handle the case when block hash is None
-        return [b"\x00" * 32] * len(tokens)  # Use null bytes as placeholder
-
-    # If block hash is already bytes, use it directly
-    if isinstance(block.hash, bytes):
-        block_hash_bytes = block.hash
-    # If it's HexBytes, convert to regular bytes
-    elif hasattr(block.hash, "hex") and callable(getattr(block.hash, "hex")):
-        block_hash_bytes = block.hash
-    # Handle hex string with '0x' prefix
-    elif isinstance(block.hash, str):
-        # Remove '0x' prefix if present
-        clean_hash = block.hash[2:] if block.hash.startswith("0x") else block.hash
-        try:
-            # Convert hex string to bytes
-            block_hash_bytes = bytes.fromhex(clean_hash)
-        except ValueError as e:
-            # Log the problematic hash for debugging
-            print(f"Error converting block hash: {block.hash}, type: {type(block.hash)}")
-            # Fallback to a safe default or raise custom error with more details
-            raise ValueError(f"Invalid block hash format: {block.hash}") from e
-    else:
-        # Unknown format - raise a clear error
-        raise TypeError(f"Unsupported block hash type: {type(block.hash)}")
-
-    # Create a list of the same block hash for each token
-    return [block_hash_bytes] * len(tokens)
-
-
-def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle_address) -> Any:
+def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle_address, is_swap: bool = True) -> Any:
     """
     Execute a transaction with oracle parameters
 
     Args:
         fixture: Object containing account and contract references
         overrides: Parameters for execution including oracle info
+        deployed_oracle_address: Address of the deployed oracle contract
+        is_swap: Boolean indicating if this is a swap transaction. Defaults to True.
 
     Returns:
         Transaction receipt or simulation result
@@ -163,7 +136,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
 
     # Get blockchain block information
     block = web3_provider.eth.get_block(int(oracle_block_number))
-    # print(f"Block number: {block.number}")
+    print(f"Block number: {block.number}")
 
     # Default to standard oracle types if not provided
     token_oracle_types = overrides.get("tokenOracleTypes", [TOKEN_ORACLE_TYPES["DEFAULT"]] * len(tokens))
@@ -201,7 +174,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
 
         # Handle block hash depending on its format
         block_hash = block.hash.hex() if isinstance(block.hash, bytes) else block.hash
-        block_hashes = get_block_hashes(block, tokens)
+        block_hashes = [bytes.fromhex(block_hash)] * len(tokens)
 
     # Prepare arguments for oracle parameters - no conditional checks needed now
     args = {
@@ -250,7 +223,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         keeper_address = "0xE47b36382DC50b90bCF6176Ddb159C4b9333A7AB"
         controller_address = "0xb6d37DFCdA9c237ca98215f9154Dc414EFe0aC1b"
         # Get full oracle parameters for execution
-        # print(f"Args for oracle params: {args}")
+        print(f"Args for oracle params: {args}")
         oracle_params = get_oracle_params_for_custom_oracle(
             config=config,
             keeper_address=keeper_address,
@@ -260,7 +233,7 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         )
 
         logging.info(f"Key: {key}")
-        # logging.info(f"Oracle Params: {oracle_params}")
+        logging.info(f"Oracle Params: {oracle_params}")
 
         # Get the first signer if available
         if not signers:
@@ -273,14 +246,14 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         controller = "0xf5F30B10141E1F63FC11eD772931A8294a591996"
         oracle_contract = get_contract_object(config.get_web3_connection(), "oracle", config.chain)
         # * clear the price first
-        # oracle_contract.functions.clearAllPrices().transact({"from": controller})
+        oracle_contract.functions.clearAllPrices().transact({"from": controller})
         # ETH PRICE. WETH address: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
         # oracle_contract.functions.setPrimaryPrice(
         #     "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", (2505849875000000, 2505989682807298)
         # ).transact({"from": controller})
 
         # LINK price
-        # NOTE: address, (min_price, max_price)
+        # # NOTE: address, (min_price, max_price)
         # oracle_contract.functions.setPrimaryPrice(
         #     "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4", (16364090000000, 16373342000000)
         # ).transact({"from": controller})
@@ -290,18 +263,44 @@ def execute_with_oracle_params(fixture, overrides: dict, config, deployed_oracle
         #     "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", (999923135340409600000000, 1000053137654175000000000)
         # ).transact({"from": controller})
 
-        # # SOL price
-        # oracle_contract.functions.setPrimaryPrice(
-        #     "0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07", (170177872499118025000000, 170192030000000000000000)
-        # ).transact({"from": controller})
+        # ? for increase & decrease orders, we need to set the prices.
+        # Keep it hardcoded for now. Only supports postions in GMX/USDC market with USDC as collateral.
+        if not is_swap:
+            oracle_prices = OraclePrices(chain="arbitrum").get_recent_prices()
+
+            max_price = int(
+                oracle_prices[to_checksum_address("0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a")]["maxPriceFull"]
+            )
+            min_price = int(
+                oracle_prices[to_checksum_address("0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a")]["minPriceFull"]
+            )
+            oracle_contract = get_contract_object(config.get_web3_connection(), "oracle", config.chain)
+            # GMX price
+            oracle_contract.functions.setPrimaryPrice(
+                to_checksum_address("0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a"), (min_price, max_price)
+            ).transact({"from": controller})
+
+            # USDC price
+            max_price = int(
+                oracle_prices[to_checksum_address("0xaf88d065e77c8cC2239327C5EDb3A432268e5831")]["maxPriceFull"]
+            )
+            min_price = int(
+                oracle_prices[to_checksum_address("0xaf88d065e77c8cC2239327C5EDb3A432268e5831")]["minPriceFull"]
+            )
+
+            # GMX price
+            oracle_contract.functions.setPrimaryPrice(
+                to_checksum_address("0xaf88d065e77c8cC2239327C5EDb3A432268e5831"), (min_price, max_price)
+            ).transact({"from": controller})
 
         # Build the transaction
         transaction = order_handler.functions.executeOrder(key, oracle_params).build_transaction(
             {
                 "from": keeper_address,  # to_checksum_address(active_signer.get_address()),
                 "nonce": nonce,
-                "gas": 90000000,
-                "gasPrice": web3_provider.eth.gas_price,
+                "gas": 90000000,  # Set appropriate gas limit
+                "maxFeePerGas": web3_provider.eth.gas_price * 200,  # Adjust as needed
+                "maxPriorityFeePerGas": web3_provider.eth.gas_price // 10,  # Adjust as needed
             }
         )
         # owner of order_handler 0xE7BfFf2aB721264887230037940490351700a068
