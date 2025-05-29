@@ -1,7 +1,16 @@
 
 # GMX Python SDK
 
-A python based SDK developed for interacting with GMX v2
+`gmx-python-ng` is a Python based SDK developed for interacting with [GMX](https://gmx.io/) 
+[decentralised exchange](https://tradingstrategy.ai/glossary/decentralised-exchange) for 
+[perpetual futures](https://tradingstrategy.ai/glossary/perpetual-future).
+
+This version is based on original `gmx-python-sdk` package, and designed to be 
+used as a dependency for [web3-ethereum-defi](https://github.com/tradingstrategy-ai/web3-ethereum-defi) package.
+`web3-ethereum-defi` provides clean, maintained, API and documentation on the top of this library
+for interacting with GMX and wider Ethereum DeFi ecosystem. 
+
+The `ng` suffix in the package name stands for "next generation".
 
 - [Pip Install](https://github.com/snipermonke01/gmx_python_sdk/tree/main?tab=readme-ov-file#pip-install)
 - [Requirements](https://github.com/snipermonke01/gmx_python_sdk/tree/main?tab=readme-ov-file#requirements)

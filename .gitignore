@@ -5,3 +5,4 @@
 # *.json
 poetry.lock
 .env
+dist/*
