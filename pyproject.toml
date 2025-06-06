@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gmx_python_sdk"
-version = "0.0.19"
+version = "0.0.20"
 description = "A python based SDK developed for interacting with GMX v2"
 
 authors = [
@@ -22,6 +22,7 @@ license = "MIT"
 [tool.poetry.group.dev.dependencies]
 dotenv = "^0.9.9"
 rich = "^14.0.0"
+ipython = "8.19"
 
 [tool.setuptools.packages.find]
 include = ["gmx_python_sdk", "gmx_python_sdk.*"]
