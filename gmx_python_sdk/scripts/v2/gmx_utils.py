@@ -218,7 +218,7 @@ class ConfigManager:
             if self.rpc is None:
                 msg = "RPC URL is required to create a Web3 connection"
                 raise ValueError(msg)
-            self._web3_connection = Web3(Web3.HTTPProvider(self.rpc, request_kwargs={"timeout": 30}))
+            self._web3_connection = Web3(Web3.HTTPProvider(self.rpc))
 
         return self._web3_connection
 
